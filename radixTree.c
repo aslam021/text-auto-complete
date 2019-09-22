@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #define ALPHABET_SIZE 26
 #define MAX_WORD_SIZE 20
@@ -170,6 +171,11 @@ int main(int argc, char *argv[]){
     char str[MAX_WORD_SIZE];
     int c;
     char ch[MAX_WORD_SIZE]; //for the purpose of filtering
+    
+    clock_t start, end;
+    double cpu_time_used;
+    
+    start = clock();
     while (fgets(str, MAX_WORD_SIZE, file) != NULL){
         //remove some characters 
         c=0;
@@ -188,12 +194,16 @@ int main(int argc, char *argv[]){
         //insert filtered word into trie DS
         insertWord(ch, radixHead);
     }
+    end =clock();
+    cpu_time_used = ((double)(end-start)) / CLOCKS_PER_SEC;
+    printf("Time taken to store the dictionary: %f seconds\n", cpu_time_used);
     
     fclose(file); //close the file after all words updated into the trie
     
-    //ask user to enter a word for give suggestions
-    printf("Enter first n characters a word : ");
     while (1){
+        //get input
+        printf("-------------------------------------------------------");
+        printf("\n\nEnter first n characters of a word : ");
         memset(str, '\0', sizeof(str));
         fgets(str, MAX_WORD_SIZE, stdin);
         
@@ -214,12 +224,13 @@ int main(int argc, char *argv[]){
         if(strlen(ch)==0) break;
 
         //search for suggestions
+        start = clock();
         if(!printSuggestions(radixHead, ch)){
             printf("No suggestions found\n");
         }
-
-        //get more input
-        printf("\nEnter first n characters a word : ");
+        end = clock();
+        cpu_time_used = ((double)(end-start)) / CLOCKS_PER_SEC;
+        printf("\nTime taken to print above suggestions: %f seconds\n", cpu_time_used);
     }
 
     return 0;
